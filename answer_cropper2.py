@@ -786,12 +786,12 @@ def refine_item_crop(image: np.ndarray, page_anchor_mean_height: float) -> np.nd
     return image
 
 
-def upscale_image_250(image: np.ndarray) -> np.ndarray:
+def upscale_image_2x(image: np.ndarray) -> np.ndarray:
     if image.size == 0:
         return image
     return cv2.resize(
         image,
-        (int(round(image.shape[1] * 2.5)), int(round(image.shape[0] * 2.5))),
+        (image.shape[1] * 2, image.shape[0] * 2),
         interpolation=cv2.INTER_CUBIC,
     )
 
@@ -942,7 +942,7 @@ def collect_entries(pdf_path: Path, output_dir: Path, scale: float, selected_pag
 
                     crop = page_image[y1:y2, x1:x2]
                     crop = refine_item_crop(crop, page_anchor_mean_height)
-                    crop = upscale_image_250(crop)
+                    crop = upscale_image_2x(crop)
 
                     answer_entry = extract_entry(anchor.box.text)
                     suffix = f"_{answer_entry[1]}" if answer_entry else ""
