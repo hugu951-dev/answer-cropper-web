@@ -33,6 +33,7 @@ NOISY_ANSWER_MAP = {
 
 QUESTION_PREFIX_RE = re.compile(r"^(?P<number>\d{4})(?P<tail>.*)$")
 ENTRY_RE = re.compile(r"(?P<number>\d{4})\s*(?P<answer>[①②③④⑤12345])$")
+_OCR_ENGINE: RapidOCR | None = None
 
 
 @dataclass
@@ -803,6 +804,13 @@ def write_crop(image: np.ndarray, output_path: Path) -> None:
     output_path.write_bytes(encoded.tobytes())
 
 
+def get_ocr_engine() -> RapidOCR:
+    global _OCR_ENGINE
+    if _OCR_ENGINE is None:
+        _OCR_ENGINE = RapidOCR()
+    return _OCR_ENGINE
+
+
 def build_crop_layout(
     page_image: np.ndarray,
     ocr_engine: RapidOCR,
@@ -863,7 +871,7 @@ def parse_page_spec(page_spec: str | None) -> set[int] | None:
 
 
 def collect_entries(pdf_path: Path, output_dir: Path, scale: float, selected_pages: set[int] | None = None) -> int:
-    ocr_engine = RapidOCR()
+    ocr_engine = get_ocr_engine()
     document = fitz.open(pdf_path)
     saved_count = 0
     seen_numbers: set[str] = set()

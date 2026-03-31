@@ -2,7 +2,7 @@ fastapi
 jinja2
 python-multipart
 rapidocr-onnxruntime
-opencv-python
+opencv-python-headless
 PyMuPDF
 numpy
 uvicorn[standard]
