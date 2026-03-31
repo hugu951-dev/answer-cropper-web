@@ -19,7 +19,7 @@ TEMPLATES = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 app = FastAPI(title="Answer Cropper", version="1.0.0")
 logger = logging.getLogger(__name__)
-CROP_SCALE = 4.0
+CROP_SCALE = 3.0
 
 
 def build_zip_bytes(output_dir: Path) -> bytes:
