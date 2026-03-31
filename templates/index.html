@@ -104,14 +104,87 @@
         <h1>Answer Cropper</h1>
         <p>빠른 정답 PDF를 업로드하면 문항별 크롭 이미지를 ZIP으로 만들어 다운로드합니다.</p>
         <div class="note">
-          처리 시간은 PDF 크기와 페이지 수에 따라 달라집니다. 업로드 후 브라우저가 응답할 때까지 기다리면 ZIP 다운로드가 시작됩니다.
+          PDF 업로드 후 작업을 생성하고, 서버에서 상태를 확인한 뒤 완료되면 ZIP 다운로드 링크를 제공합니다.
         </div>
-        <form action="/crop" method="post" enctype="multipart/form-data">
-          <input type="file" name="file" accept="application/pdf,.pdf" required />
-          <button type="submit">PDF 업로드 후 처리 시작</button>
+        <form id="job-form">
+          <input id="file-input" type="file" name="file" accept="application/pdf,.pdf" required />
+          <button id="submit-button" type="submit">PDF 업로드 후 처리 시작</button>
         </form>
+        <div id="status-box" class="note" hidden></div>
         <p class="sub">지원 형식: PDF</p>
       </section>
     </main>
+    <script>
+      const form = document.getElementById("job-form");
+      const fileInput = document.getElementById("file-input");
+      const submitButton = document.getElementById("submit-button");
+      const statusBox = document.getElementById("status-box");
+
+      function setStatus(message, isError = false) {
+        statusBox.hidden = false;
+        statusBox.textContent = message;
+        statusBox.style.background = isError ? "#fdecea" : "#f8f2e2";
+        statusBox.style.borderColor = isError ? "#efb4ac" : "#ead9b1";
+      }
+
+      async function pollJob(jobId) {
+        while (true) {
+          const response = await fetch(`/jobs/${jobId}`);
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.detail || "작업 상태 확인에 실패했습니다.");
+          }
+
+          if (data.status === "queued") {
+            setStatus("대기 중입니다...");
+          } else if (data.status === "running") {
+            setStatus("처리 중입니다...");
+          } else if (data.status === "completed") {
+            const countText = data.saved_count ? ` (${data.saved_count}개)` : "";
+            statusBox.innerHTML = `처리 완료${countText}. <a href="${data.download_url}">ZIP 다운로드</a>`;
+            return;
+          } else if (data.status === "failed") {
+            throw new Error(data.error || "작업이 실패했습니다.");
+          } else {
+            setStatus(`상태 확인 중: ${data.raw_status || "unknown"}`);
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const file = fileInput.files[0];
+        if (!file) {
+          setStatus("PDF 파일을 선택하세요.", true);
+          return;
+        }
+
+        submitButton.disabled = true;
+        setStatus("업로드 중입니다...");
+
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await fetch("/jobs", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.detail || "작업 생성에 실패했습니다.");
+          }
+
+          setStatus("작업이 생성되었습니다. 상태를 확인합니다...");
+          await pollJob(data.job_id);
+        } catch (error) {
+          setStatus(error.message || "처리 중 오류가 발생했습니다.", true);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    </script>
   </body>
   </html>

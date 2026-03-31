@@ -5,4 +5,7 @@ rapidocr-onnxruntime
 opencv-python-headless
 PyMuPDF
 numpy
+boto3
+requests
+runpod
 uvicorn[standard]
