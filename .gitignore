@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+
+cropped_answers/
+output/
+output_*/
+sample*_crops/
+
+sample*_page*_debug*.png
+sample*_page*_foreground_mask*.png
+*.log
+
+샘플1.pdf
+샘플2.pdf
+샘플3.pdf
+결과 샘플1.png
+결과 샘플2.png
+결과 샘플3.png
+결과 샘플4.png

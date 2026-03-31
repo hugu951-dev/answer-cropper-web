@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Answer Cropper</title>
+    <style>
+      :root {
+        --bg: #f4efe3;
+        --panel: #fffdf8;
+        --ink: #1d1d1b;
+        --accent: #d95f18;
+        --accent-2: #7a9d33;
+        --line: #d8cdb7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(217, 95, 24, 0.12), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(122, 157, 51, 0.12), transparent 28%),
+          var(--bg);
+      }
+
+      .wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(720px, 100%);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 18px 48px rgba(29, 29, 27, 0.08);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(28px, 4vw, 40px);
+        line-height: 1.05;
+      }
+
+      p {
+        margin: 0 0 20px;
+        line-height: 1.6;
+      }
+
+      .note {
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #f8f2e2;
+        border: 1px solid #ead9b1;
+        margin-bottom: 24px;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        padding: 16px;
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        background: #fff;
+      }
+
+      button {
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 18px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #f08b2f);
+        cursor: pointer;
+      }
+
+      button:hover {
+        filter: brightness(0.98);
+      }
+
+      .sub {
+        font-size: 14px;
+        color: #5e594e;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>Answer Cropper</h1>
+        <p>빠른 정답 PDF를 업로드하면 문항별 크롭 이미지를 ZIP으로 만들어 다운로드합니다.</p>
+        <div class="note">
+          처리 시간은 PDF 크기와 페이지 수에 따라 달라집니다. 업로드 후 브라우저가 응답할 때까지 기다리면 ZIP 다운로드가 시작됩니다.
+        </div>
+        <form action="/crop" method="post" enctype="multipart/form-data">
+          <input type="file" name="file" accept="application/pdf,.pdf" required />
+          <button type="submit">PDF 업로드 후 처리 시작</button>
+        </form>
+        <p class="sub">지원 형식: PDF</p>
+      </section>
+    </main>
+  </body>
+  </html>

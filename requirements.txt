@@ -1,0 +1,8 @@
+fastapi
+jinja2
+python-multipart
+rapidocr-onnxruntime
+opencv-python
+PyMuPDF
+numpy
+uvicorn[standard]
